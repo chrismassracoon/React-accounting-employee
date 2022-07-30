@@ -18,6 +18,7 @@ class App extends Component {
 					name: 'Alex',
 					surname: 'Stivenson',
 					salary: '2000',
+					rise:true,
 					increase: false,
 					id: 1
 				},
@@ -25,6 +26,7 @@ class App extends Component {
 					name: 'Osvald',
 					surname: 'Fries',
 					salary: '3500',
+					rise:false,
 					increase: false,
 					id: 2
 				},
@@ -32,6 +34,7 @@ class App extends Component {
 					name: 'Jack',
 					surname: 'Jonson',
 					salary: '1800',
+					rise:false,
 					increase: true,
 					id: 3
 				},
@@ -39,22 +42,9 @@ class App extends Component {
 					name: 'Jack',
 					surname: 'Jonson',
 					salary: '1800',
+					rise:false,
 					increase: false,
 					id: 4
-				},
-				{
-					name: 'Jack',
-					surname: 'Jonson',
-					salary: '1800',
-					increase: false,
-					id: 5
-				},
-				{
-					name: 'Jack',
-					surname: 'Jonson',
-					salary: '1800',
-					increase: false,
-					id: 6
 				},
 			]
 		}
@@ -84,6 +74,7 @@ class App extends Component {
 			name,
 			surname,
 			salary,
+			rise: false,
 			increase: false,
 			id: this.maxId++
 		}
@@ -95,10 +86,35 @@ class App extends Component {
 		})
 	}
 
+	onToggleProp = (id, prop) => {
+		// this.setState(({data}) => {
+		// 	const index = data.findIndex(elem => elem.id === id);
+
+		// 	const old = data[index];
+		// 	const newItem = {...old, increase: !old.increase};
+		// 	const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)]
+		// 	return {
+		// 		data: newArr
+		// 	}
+		// })
+		this.setState(({data}) => ({
+			data: data.map(item => {
+				if(item.id === id) {
+					return {...item, [prop]: !item[prop]}
+				}
+				return item;
+			})
+		}))
+	}
+
 	render() {
+		const employees = this.state.data.length;
+		const awarded = this.state.data.filter(item => item.increase).length;
 		return (
 			<div className="App">
-				<AppInfo />
+				<AppInfo 
+				employees={employees}
+				awarded={awarded}/>
 
 				<div className="search-panel">
 					<SearchPanel></SearchPanel>
@@ -106,6 +122,7 @@ class App extends Component {
 				</div>
 				<EmployeeList data={this.state.data}
 					onDelete={this.deleteItem}
+					onToggleProp={this.onToggleProp}
 				></EmployeeList>
 				<EmployeeAddForm onAdd={this.addItem}></EmployeeAddForm>
 			</div>
