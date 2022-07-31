@@ -129,6 +129,17 @@ class App extends Component {
 	 }
 }
 
+	changeSalary = (id, value) => {
+	this.setState(({data}) => ({
+	  data: data.map(item => {
+		 if (item.id === id) {
+			return {...item, salary: value}
+		 }
+		 return item;
+	  })
+	}))
+ }
+
 onTakePosition = (pos) => {
 	this.setState({filterPos : pos})
 }
@@ -150,6 +161,7 @@ onTakePosition = (pos) => {
 				<EmployeeList data={visibleData}
 					onDelete={this.deleteItem}
 					onToggleProp={this.onToggleProp}
+					changeSalary={this.changeSalary}
 				></EmployeeList>
 				<EmployeeAddForm onAdd={this.addItem}></EmployeeAddForm>
 			</div>
