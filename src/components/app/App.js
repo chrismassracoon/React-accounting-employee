@@ -15,38 +15,29 @@ class App extends Component {
 		this.state = {
 			data: [
 				{
-					name: 'Alex',
-					surname: 'Stivenson',
+					name: 'Alex Stivenson',
 					salary: '2000',
-					rise:true,
+					rise: true,
 					increase: false,
 					id: 1
 				},
 				{
-					name: 'Osvald',
-					surname: 'Fries',
+					name: 'Osvald Fries',
 					salary: '3500',
-					rise:false,
+					rise: false,
 					increase: false,
 					id: 2
 				},
 				{
-					name: 'Jack',
-					surname: 'Jonson',
+					name: 'Jack Jonson',
 					salary: '1800',
-					rise:false,
+					rise: false,
 					increase: true,
 					id: 3
 				},
-				{
-					name: 'Jack',
-					surname: 'Jonson',
-					salary: '1800',
-					rise:false,
-					increase: false,
-					id: 4
-				},
-			]
+			],
+			term: '',
+			filterPos: 'all'
 		}
 		this.maxId = 4;
 	}
@@ -68,11 +59,9 @@ class App extends Component {
 		})
 	}
 
-	addItem = (firstname, salary) => {
-		const [name, surname] = firstname.split(' ');
+	addItem = (name, salary) => {
 		const newItem = {
 			name,
-			surname,
 			salary,
 			rise: false,
 			increase: false,
@@ -97,30 +86,68 @@ class App extends Component {
 		// 		data: newArr
 		// 	}
 		// })
-		this.setState(({data}) => ({
+		this.setState(({ data }) => ({
 			data: data.map(item => {
-				if(item.id === id) {
-					return {...item, [prop]: !item[prop]}
+				if (item.id === id) {
+					return { ...item, [prop]: !item[prop] }
 				}
 				return item;
 			})
 		}))
 	}
 
+	searchEmp = (items, term) => {
+		if (term.length === 0) {
+			return items;
+		}
+
+		return items.filter(item => {
+			return item.name.indexOf(term) > -1
+		})
+	}
+
+	onUpdateSearch = (term) => {
+		this.setState({ term });
+	}
+
+	onFilterData = (position) => {
+		const { data, term } = this.state;
+		if(position === 'all'){
+		return	this.searchEmp(data, term)
+		} else if (position === 'prom') {
+		return	this.searchEmp(data, term).filter(item => {
+			return	item.rise === true
+			})
+		}
+		else if (position === 'over1000') {
+			return	this.searchEmp(data, term).filter(item => {
+				return	item.salary >= 1000;
+				})
+	}
+	 else {
+		return	this.searchEmp(data, term);
+	 }
+}
+
+onTakePosition = (pos) => {
+	this.setState({filterPos : pos})
+}
 	render() {
+		const pos = this.state.filterPos;
 		const employees = this.state.data.length;
 		const awarded = this.state.data.filter(item => item.increase).length;
+		const visibleData = this.onFilterData(pos);
 		return (
 			<div className="App">
-				<AppInfo 
-				employees={employees}
-				awarded={awarded}/>
+				<AppInfo
+					employees={employees}
+					awarded={awarded} />
 
 				<div className="search-panel">
-					<SearchPanel></SearchPanel>
-					<AppFilter></AppFilter>
+					<SearchPanel onUpdateSearch={this.onUpdateSearch}></SearchPanel>
+					<AppFilter onTakePosition={this.onTakePosition}></AppFilter>
 				</div>
-				<EmployeeList data={this.state.data}
+				<EmployeeList data={visibleData}
 					onDelete={this.deleteItem}
 					onToggleProp={this.onToggleProp}
 				></EmployeeList>
